@@ -1,0 +1,19 @@
+server:
+  port: ${STORAGE_SERVICE_PORT:8088}
+
+spring:
+  application:
+    name: x-storage-service
+  profiles:
+    default: local
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+x:
+  storage:
+    # Local disk root for uploaded files
+    root-dir: ${X_STORAGE_ROOT:./uploads}
+    # Public base URL used in responses (BFF/gateway can reverse-proxy later)
+    public-base-url: ${X_STORAGE_PUBLIC_BASE_URL:http://127.0.0.1:8088}
