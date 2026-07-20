@@ -3,10 +3,9 @@
 *.iml
 .vscode/
 *.swp
-*.swo
 *~
 
-# Docs / notes (not versioned per project policy)
+# Docs / notes
 *.md
 *.txt
 
@@ -17,41 +16,23 @@ out/
 *.class
 *.jar
 *.war
-*.ear
 hs_err_pid*
-replay_pid*
 
 # Runtime / local data
 .run/
-uploads/
-**/uploads/**
-!**/uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
 data/
 *.log
 *.tmp
-*.temp
 .DS_Store
 Thumbs.db
 
 # Env / secrets
 .env
 .env.*
-!.env.example
-*.pem
-*.key
 
-# OS
+# OS / Eclipse
 .classpath
 .project
 .settings/
-
-# Node (for UI projects)
-node_modules/
-dist/
-.coverage/
-.nyc_output/
-
-# keep empty uploads dir
-uploads/*
-!uploads/.gitkeep
-
