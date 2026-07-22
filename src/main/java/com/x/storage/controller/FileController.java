@@ -1,5 +1,6 @@
 package com.x.storage.controller;
 
+import com.x.storage.dto.Base64FileUploadRequest;
 import com.x.storage.dto.FileResponse;
 import com.x.storage.entity.StoredFile;
 import com.x.storage.service.StorageService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,14 +29,25 @@ public class FileController {
     }
 
     /**
-     * Upload a file. Optional ownerType/ownerId e.g. product / 42.
+     * Multipart upload. Optional {@code kind}=media|file.
+     * Optional ownerType/ownerId e.g. product / 42.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FileResponse upload(
             @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "kind", required = false) String kind,
             @RequestParam(value = "ownerType", required = false) String ownerType,
             @RequestParam(value = "ownerId", required = false) String ownerId) {
-        return storageService.store(file, ownerType, ownerId);
+        return storageService.store(file, ownerType, ownerId, kind);
+    }
+
+    /**
+     * JSON upload for pictures (and files): base64 body → S3 + MySQL.
+     * Content-Type: application/json
+     */
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public FileResponse uploadJson(@RequestBody Base64FileUploadRequest request) {
+        return storageService.storeBase64(request);
     }
 
     @GetMapping("/{id}")

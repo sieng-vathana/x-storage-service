@@ -30,8 +30,17 @@ public class StoredFile {
     @Column(name = "size_bytes", nullable = false)
     private long sizeBytes;
 
-    @Column(name = "relative_path", nullable = false)
+    /** e.g. media/uuid.jpg or files/uuid.pdf */
+    @Column(name = "relative_path", nullable = false, length = 512)
     private String relativePath;
+
+    /** MEDIA or FILE */
+    @Column(name = "storage_kind", length = 16)
+    private String storageKind;
+
+    /** local or s3 */
+    @Column(name = "storage_backend", length = 16)
+    private String storageBackend;
 
     @Column(name = "owner_type")
     private String ownerType;
@@ -89,6 +98,22 @@ public class StoredFile {
 
     public void setRelativePath(String relativePath) {
         this.relativePath = relativePath;
+    }
+
+    public String getStorageKind() {
+        return storageKind;
+    }
+
+    public void setStorageKind(String storageKind) {
+        this.storageKind = storageKind;
+    }
+
+    public String getStorageBackend() {
+        return storageBackend;
+    }
+
+    public void setStorageBackend(String storageBackend) {
+        this.storageBackend = storageBackend;
     }
 
     public String getOwnerType() {

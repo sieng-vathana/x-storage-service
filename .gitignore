@@ -18,17 +18,20 @@ out/
 *.war
 hs_err_pid*
 
-# Runtime / local data
+# Runtime / local data (never push media or documents)
 .run/
-uploads/*
+uploads/
+uploads/**
 !uploads/.gitkeep
+!uploads/media/.gitkeep
+!uploads/files/.gitkeep
 data/
 *.log
 *.tmp
 .DS_Store
 Thumbs.db
 
-# Env / secrets
+# Env / secrets (S3 keys, etc.)
 .env
 .env.*
 
@@ -36,3 +39,7 @@ Thumbs.db
 .classpath
 .project
 .settings/
+
+# Secrets (never commit)
+config/secrets.yml
+**/application-secrets.yml

@@ -2,16 +2,30 @@ spring:
   config:
     activate:
       on-profile: local
+    import: optional:file:../config/secrets.yml
   datasource:
-    url: jdbc:mysql://127.0.0.1:3307/vyntra_storage?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: vyntra_local
-    password: vyntra
+    url: jdbc:mysql://${db.host}:${db.port}/${db.dev.name}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${db.dev.username}
+    password: ${db.dev.password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 5000
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
+
+x:
+  storage:
+    type: s3
+    public-base-url: http://127.0.0.1:7555
+    s3:
+      bucket: ${s3.bucket}
+      region: ${s3.region}
+      access-key: ${s3.access-key}
+      secret-key: ${s3.secret-key}
+      # Clean permanent URL: https://bucket.s3.region.amazonaws.com/key
+      url-mode: public

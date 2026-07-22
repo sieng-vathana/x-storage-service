@@ -1,0 +1,29 @@
+spring:
+  config:
+    activate:
+      on-profile: production
+    import: optional:file:../config/secrets.yml
+  datasource:
+    url: jdbc:mysql://${db.host}:${db.port}/${db.prod.name}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${db.prod.username}
+    password: ${db.prod.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 5000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+x:
+  storage:
+    type: s3
+    public-base-url: http://169.58.46.185:8088
+    s3:
+      bucket: ${s3.bucket}
+      region: ${s3.region}
+      access-key: ${s3.access-key}
+      secret-key: ${s3.secret-key}
