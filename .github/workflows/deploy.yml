@@ -1,14 +1,11 @@
 name: Build and deploy x-storage-service
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   packages: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
