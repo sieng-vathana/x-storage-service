@@ -2,6 +2,7 @@ package com.x.storage.controller;
 
 import com.x.storage.dto.S3TestResponse;
 import com.x.storage.service.S3TestService;
+import com.sharedlib.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,17 +29,20 @@ public class S3TestController {
      * Returns 200 when all steps succeed, 503 when S3/config fails.
      */
     @GetMapping("/s3-test")
-    public ResponseEntity<S3TestResponse> testGet() {
+    public ResponseEntity<ApiResponse<S3TestResponse>> testGet() {
         return toResponse(s3TestService.runProbe());
     }
 
     @PostMapping("/s3-test")
-    public ResponseEntity<S3TestResponse> testPost() {
+    public ResponseEntity<ApiResponse<S3TestResponse>> testPost() {
         return toResponse(s3TestService.runProbe());
     }
 
-    private static ResponseEntity<S3TestResponse> toResponse(S3TestResponse body) {
+    private static ResponseEntity<ApiResponse<S3TestResponse>> toResponse(S3TestResponse body) {
         HttpStatus status = body.isOk() ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE;
-        return ResponseEntity.status(status).body(body);
+        ApiResponse<S3TestResponse> response = body.isOk()
+                ? ApiResponse.success(status.value(), body.getMessage(), body)
+                : ApiResponse.error(status.value(), body.getMessage(), body);
+        return ResponseEntity.status(status).body(response);
     }
 }

@@ -21,7 +21,7 @@ spring:
 x:
   storage:
     type: s3
-    public-base-url: http://169.58.46.185:8088
+    public-base-url: ${X_STORAGE_PUBLIC_BASE_URL:https://learner-teach.online}
     s3:
       bucket: ${s3.bucket}
       region: ${s3.region}

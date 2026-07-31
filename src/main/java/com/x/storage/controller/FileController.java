@@ -4,10 +4,12 @@ import com.x.storage.dto.Base64FileUploadRequest;
 import com.x.storage.dto.FileResponse;
 import com.x.storage.entity.StoredFile;
 import com.x.storage.service.StorageService;
+import com.sharedlib.response.ApiResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +35,14 @@ public class FileController {
      * Optional ownerType/ownerId e.g. product / 42.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public FileResponse upload(
+    public ResponseEntity<ApiResponse<FileResponse>> upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "kind", required = false) String kind,
             @RequestParam(value = "ownerType", required = false) String ownerType,
             @RequestParam(value = "ownerId", required = false) String ownerId) {
-        return storageService.store(file, ownerType, ownerId, kind);
+        FileResponse response = storageService.store(file, ownerType, ownerId, kind);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(HttpStatus.CREATED.value(), "File uploaded", response));
     }
 
     /**
@@ -46,13 +50,15 @@ public class FileController {
      * Content-Type: application/json
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public FileResponse uploadJson(@RequestBody Base64FileUploadRequest request) {
-        return storageService.storeBase64(request);
+    public ResponseEntity<ApiResponse<FileResponse>> uploadJson(@RequestBody Base64FileUploadRequest request) {
+        FileResponse response = storageService.storeBase64(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(HttpStatus.CREATED.value(), "File uploaded", response));
     }
 
     @GetMapping("/{id}")
-    public FileResponse meta(@PathVariable Long id) {
-        return storageService.getMeta(id);
+    public ResponseEntity<ApiResponse<FileResponse>> meta(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), storageService.getMeta(id)));
     }
 
     @GetMapping("/{id}/content")
@@ -75,8 +81,8 @@ public class FileController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         storageService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "File deleted", null));
     }
 }
