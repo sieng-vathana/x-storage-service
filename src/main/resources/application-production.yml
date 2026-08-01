@@ -27,3 +27,7 @@ x:
       region: ${s3.region}
       access-key: ${s3.access-key}
       secret-key: ${s3.secret-key}
+      # The media bucket is private. Return browser-loadable AWS presigned URLs,
+      # not raw S3 object URLs that receive a 403 response.
+      url-mode: presigned
+      presign-duration-hours: 24
