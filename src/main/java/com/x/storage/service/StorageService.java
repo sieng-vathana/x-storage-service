@@ -153,6 +153,19 @@ public class StorageService {
         return toResponse(find(id));
     }
 
+    /** Internal lookup for services migrating legacy direct S3 URLs to a fresh signed URL. */
+    @Transactional(readOnly = true)
+    public FileResponse getMetaByRelativePath(String relativePath) {
+        if (!StringUtils.hasText(relativePath)
+                || relativePath.startsWith("/")
+                || relativePath.contains("..")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid relative path");
+        }
+        StoredFile file = repository.findByRelativePath(relativePath)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
+        return toResponse(file);
+    }
+
     @Transactional(readOnly = true)
     public Resource loadAsResource(Long id) {
         StoredFile file = find(id);
