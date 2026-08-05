@@ -1,11 +1,14 @@
 package com.x.storage.service;
 
+import com.x.redis.cache.CacheNames;
 import com.x.storage.config.StorageProperties;
 import com.x.storage.domain.StorageKind;
 import com.x.storage.dto.Base64FileUploadRequest;
 import com.x.storage.dto.FileResponse;
 import com.x.storage.entity.StoredFile;
 import com.x.storage.repository.StoredFileRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -154,6 +157,7 @@ public class StorageService {
     }
 
     /** Internal lookup for services migrating legacy direct S3 URLs to a fresh signed URL. */
+    @Cacheable(cacheNames = CacheNames.STORAGE_FILE_BY_RELATIVE_PATH, key = "#relativePath")
     @Transactional(readOnly = true)
     public FileResponse getMetaByRelativePath(String relativePath) {
         if (!StringUtils.hasText(relativePath)
@@ -178,6 +182,7 @@ public class StorageService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found"));
     }
 
+    @CacheEvict(cacheNames = CacheNames.STORAGE_FILE_BY_RELATIVE_PATH, allEntries = true)
     @Transactional
     public void delete(Long id) {
         StoredFile file = find(id);

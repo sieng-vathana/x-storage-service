@@ -19,6 +19,8 @@ spring:
     show-sql: false
 
 x:
+  redis:
+    enabled: ${X_REDIS_ENABLED:true}
   storage:
     type: s3
     public-base-url: ${X_STORAGE_PUBLIC_BASE_URL:https://learner-teach.online}

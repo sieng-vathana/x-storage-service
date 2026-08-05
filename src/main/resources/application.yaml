@@ -9,6 +9,10 @@ spring:
     name: x-storage-service
   profiles:
     default: local
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   servlet:
     multipart:
       max-file-size: 50MB
@@ -25,6 +29,12 @@ x:
       hop: "x-api-gateway → x-bff → x-storage-service"
       hops:
         /api/v1/files: "x-api-gateway → x-bff → x-storage-service"
+  redis:
+    enabled: ${X_REDIS_ENABLED:true}
+    key-prefix: x
+    default-ttl: 10m
+    caches:
+      storage-file-by-relative-path: 15m
   storage:
     # local | s3
     type: ${X_STORAGE_TYPE:local}
