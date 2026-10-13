@@ -60,6 +60,9 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Apply upload storage claim
+        run: sudo k3s kubectl apply -f k8s/storage-pvc.yaml
+
       - name: Roll out image
         run: |
           sudo k3s kubectl -n x-platform create deployment x-storage-service --image=ghcr.io/sieng-vathana/x-storage-service:${{ github.sha }} --dry-run=client -o yaml | sudo k3s kubectl apply -f -
@@ -67,6 +70,7 @@ jobs:
           sudo k3s kubectl -n x-platform set env deployment/x-storage-service --from=secret/x-app-database
           sudo k3s kubectl -n x-platform set env deployment/x-storage-service --from=secret/x-app-storage
           sudo k3s kubectl -n x-platform set env deployment/x-storage-service SERVER_PORT=8080 SPRING_PROFILES_ACTIVE=production SPRING_DATASOURCE_URL=jdbc:mysql://mysql.x-platform.svc.cluster.local:3306/x_prod SPRING_JPA_HIBERNATE_DDL_AUTO=update REDIS_HOST=redis.x-platform.svc.cluster.local REDIS_PORT=6379
+          sudo k3s kubectl -n x-platform patch deployment x-storage-service --type=strategic -p='{"spec":{"template":{"spec":{"volumes":[{"name":"storage-data","persistentVolumeClaim":{"claimName":"x-storage-pvc"}}],"containers":[{"name":"x-storage-service","volumeMounts":[{"name":"storage-data","mountPath":"/data/uploads"}]}]}}}}'
           sudo k3s kubectl -n x-platform patch deployment x-storage-service --type=strategic -p='{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"ghcr-pull-x-storage-service"}]}}}}'
           sudo k3s kubectl -n x-platform rollout status deployment/x-storage-service --timeout=180s
       - name: Remove temporary GHCR pull secret
