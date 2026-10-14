@@ -22,14 +22,6 @@ x:
   redis:
     enabled: ${X_REDIS_ENABLED:true}
   storage:
-    type: s3
-    public-base-url: ${X_STORAGE_PUBLIC_BASE_URL:https://learner-teach.online}
-    s3:
-      bucket: ${s3.bucket}
-      region: ${s3.region}
-      access-key: ${s3.access-key}
-      secret-key: ${s3.secret-key}
-      # The media bucket is private. Return browser-loadable AWS presigned URLs,
-      # not raw S3 object URLs that receive a 403 response.
-      url-mode: presigned
-      presign-duration-hours: 24
+    type: ${X_STORAGE_TYPE:local}
+    root-dir: ${X_STORAGE_ROOT:/data/uploads}
+    public-base-url: ${X_STORAGE_PUBLIC_BASE_URL:https://api.learner-teach.online}
